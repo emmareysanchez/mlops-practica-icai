@@ -35,10 +35,13 @@ jobs:
           restore-keys: |
             dvc-cache-
 
-      # ⬇️ Step corregido: no asumimos remote 'origin'
       - name: DVC Pull
+        env:
+          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_API_KEY }}
         run: |
-          dvc pull || echo "No DVC remote configured, skipping pull"
+          dvc remote modify origin --local access_key_id $DAGSHUB_API_KEY
+          dvc remote modify origin --local secret_access_key $DAGSHUB_API_KEY
+          dvc pull -r origin
 
       - name: Install dependencies
         run: |
